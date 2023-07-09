@@ -282,8 +282,8 @@ export const changeSlide = (spec, options) => {
       previousInt = currentSlide - slideOffset;
       targetSlide = previousInt === -1 ? slideCount - 1 : previousInt;
     }
-    if (!infinite) {
-      targetSlide = previousTargetSlide - slidesToScroll;
+    if (!infinite && targetSlide < 0) {
+      targetSlide = 0;
     }
   } else if (options.message === "next") {
     slideOffset = indexOffset === 0 ? slidesToScroll : indexOffset;
@@ -292,8 +292,8 @@ export const changeSlide = (spec, options) => {
       targetSlide =
         ((currentSlide + slidesToScroll) % slideCount) + indexOffset;
     }
-    if (!infinite) {
-      targetSlide = previousTargetSlide + slidesToScroll;
+    if (!infinite && targetSlide >= slideCount) {
+      targetSlide = slideCount - 1;
     }
   } else if (options.message === "dots") {
     // Click on dots
@@ -386,9 +386,12 @@ export const swipeMove = (e, spec) => {
   let touchSwipeLength = touchObject.swipeLength;
   if (!infinite) {
     if (
-      (currentSlide === 0 && (swipeDirection === "right" || swipeDirection === "down")) ||
-      (currentSlide + 1 >= dotCount && (swipeDirection === "left" || swipeDirection === "up")) ||
-      (!canGoNext(spec) && (swipeDirection === "left" || swipeDirection === "up"))
+      (currentSlide === 0 &&
+        (swipeDirection === "right" || swipeDirection === "down")) ||
+      (currentSlide + 1 >= dotCount &&
+        (swipeDirection === "left" || swipeDirection === "up")) ||
+      (!canGoNext(spec) &&
+        (swipeDirection === "left" || swipeDirection === "up"))
     ) {
       touchSwipeLength = touchObject.swipeLength * edgeFriction;
       if (edgeDragged === false && onEdge) {
